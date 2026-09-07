@@ -55,11 +55,11 @@ Concrete areas where AI helped:
 
 AI output was not accepted unchanged. Examples of corrections and rewrites include:
 
-- The first backend direction considered Fastify. I rejected it in favor of NestJS because consistent modules/controllers/services made the code easier to explain and review for this challenge.
 - Early catalogue and watchlist code did not have the same module/controller structure as the rest of the backend. I split it into explicit NestJS modules for consistency and readability.
 - A browser/API hostname mismatch (`localhost` versus `127.0.0.1`) caused cookie/CORS sign-in failure. The generated happy-path implementation missed that integration detail; I diagnosed it in the running browser and aligned the configured origins and API URL.
 - The first infinite-query implementation could request the same page twice during observer activity. I changed the fetching behavior and verified that result pages were not duplicated.
 - A detail lookup initially treated every route value like a UUID before falling back to a slug. I rewrote the query path so human-readable slug routes work correctly.
 - Docker seeding initially risked resetting data on every Compose start. I added an empty-database guard for container initialization while retaining an explicit deterministic reset seed for development.
+- An invalid poster URL originally caused the browser to show raw alternative text in the image area. I added a reusable poster component that detects image-loading failures and displays a styled Reelhouse fallback, then clarified the URL guidance in the admin form.
 
 The main limitation of AI in this exercise was that locally plausible code was not always operationally correct when browser origins, cookies, query lifecycles, routing values, and container startup ordering interacted. Running the real stack, inspecting failures, and simplifying inconsistent output mattered more than generating additional surface area.
