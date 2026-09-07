@@ -1,6 +1,6 @@
-# Reelhouse — Speedlane Movie Library
+# Reelhouse — Movie Library
 
-Reelhouse is a responsive full-stack movie catalogue built for the Speedlane Senior/Lead Software Engineer code challenge. Visitors can search and filter 200 seeded movies, members can maintain a personal watchlist, and administrators can create, edit, and delete catalogue records.
+Reelhouse is a responsive full-stack movie catalogue. Visitors can search and filter 200 seeded movies, members can maintain a personal watchlist, and administrators can create, edit, and delete catalogue records.
 
 ## Stack
 
