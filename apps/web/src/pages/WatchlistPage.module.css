@@ -1,0 +1,12 @@
+.page {
+  max-width: 1240px;
+  min-height: 70vh;
+  margin: auto;
+  padding: 80px 32px;
+}
+.page > h1 {
+  font-size: clamp(42px, 6vw, 70px);
+}
+.remove {
+  margin-top: 8px;
+}
