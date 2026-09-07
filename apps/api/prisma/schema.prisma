@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  MEMBER
+  ADMIN
+}
+
+model User {
+  id           String        @id @default(uuid()) @db.Uuid
+  email        String        @unique @db.VarChar(320)
+  passwordHash String        @map("password_hash")
+  displayName  String        @map("display_name") @db.VarChar(100)
+  role         UserRole      @default(MEMBER)
+  createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
+  sessions     AuthSession[]
+  createdMovies Movie[]      @relation("MovieCreator")
+  watchlist     WatchlistItem[]
+
+  @@map("users")
+}
+
+model AuthSession {
+  id               String    @id @default(uuid()) @db.Uuid
+  userId           String    @map("user_id") @db.Uuid
+  refreshTokenHash String    @unique @map("refresh_token_hash")
+  expiresAt        DateTime  @map("expires_at") @db.Timestamptz(3)
+  revokedAt        DateTime? @map("revoked_at") @db.Timestamptz(3)
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+  @@map("auth_sessions")
+}
+
+model Movie {
+  id             String          @id @default(uuid()) @db.Uuid
+  slug           String          @unique @db.VarChar(180)
+  title          String          @db.VarChar(200)
+  synopsis       String
+  releaseDate    DateTime        @map("release_date") @db.Date
+  runtimeMinutes Int             @map("runtime_minutes") @db.SmallInt
+  contentRating  String?         @map("content_rating") @db.VarChar(20)
+  posterUrl      String          @map("poster_url")
+  backdropUrl    String?         @map("backdrop_url")
+  averageRating  Decimal         @map("average_rating") @db.Decimal(3, 1)
+  createdById    String?         @map("created_by_id") @db.Uuid
+  createdAt      DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime        @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdBy      User?           @relation("MovieCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  directors      MovieDirector[]
+  genres         MovieGenre[]
+  watchlistedBy  WatchlistItem[]
+
+  @@index([title])
+  @@index([releaseDate])
+  @@index([averageRating])
+  @@map("movies")
+}
+
+model Director {
+  id        String          @id @default(uuid()) @db.Uuid
+  name      String          @db.VarChar(150)
+  slug      String          @unique @db.VarChar(180)
+  createdAt DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime        @updatedAt @map("updated_at") @db.Timestamptz(3)
+  movies    MovieDirector[]
+
+  @@index([name])
+  @@map("directors")
+}
+
+model MovieDirector {
+  movieId     String   @map("movie_id") @db.Uuid
+  directorId  String   @map("director_id") @db.Uuid
+  creditOrder Int      @default(0) @map("credit_order") @db.SmallInt
+  movie       Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  director    Director @relation(fields: [directorId], references: [id], onDelete: Restrict)
+
+  @@id([movieId, directorId])
+  @@index([directorId, movieId])
+  @@map("movie_directors")
+}
+
+model Genre {
+  id        String       @id @default(uuid()) @db.Uuid
+  name      String       @unique @db.VarChar(60)
+  slug      String       @unique @db.VarChar(70)
+  createdAt DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  movies    MovieGenre[]
+
+  @@map("genres")
+}
+
+model MovieGenre {
+  movieId String @map("movie_id") @db.Uuid
+  genreId String @map("genre_id") @db.Uuid
+  movie   Movie  @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  genre   Genre  @relation(fields: [genreId], references: [id], onDelete: Restrict)
+
+  @@id([movieId, genreId])
+  @@index([genreId, movieId])
+  @@map("movie_genres")
+}
+
+model WatchlistItem {
+  userId    String   @map("user_id") @db.Uuid
+  movieId   String   @map("movie_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movie     Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+
+  @@id([userId, movieId])
+  @@index([userId, createdAt])
+  @@map("watchlist_items")
+}
