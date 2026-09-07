@@ -120,10 +120,12 @@ export function MovieFormPage() {
         <label className={styles.wide}>
           Poster URL
           <input type="url" name="posterUrl" required defaultValue={movie?.posterUrl} />
+          <small>Use a direct image URL, for example one ending in .jpg, .png, or .webp.</small>
         </label>
         <label className={styles.wide}>
           Backdrop URL
           <input type="url" name="backdropUrl" defaultValue={movie?.backdropUrl} />
+          <small>Optional. This must also link directly to an image.</small>
         </label>
         <fieldset className={styles.wide}>
           <legend>Genres</legend>

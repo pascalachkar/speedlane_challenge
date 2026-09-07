@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Bookmark, Clock, Pencil, Star } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthProvider';
+import { MoviePoster } from '../components/MoviePoster';
 import { api } from '../lib/api';
 import type { Movie } from '../lib/types';
 import styles from './MoviePage.module.css';
@@ -40,7 +41,7 @@ export function MoviePage() {
         }}
       />
       <div className={styles.content}>
-        <img className={styles.poster} src={movie.posterUrl} alt={`Poster for ${movie.title}`} />
+        <MoviePoster className={styles.poster} src={movie.posterUrl} title={movie.title} />
         <div className={styles.copy}>
           <div className={styles.chips}>
             {movie.genres.map(({ genre }) => (
